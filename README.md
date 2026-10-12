@@ -6,9 +6,31 @@ as a module.
 **Optional.** An Empira application does not need this package to run. It runs
 under nginx + php-fpm, apache, or PHP's built-in server, with no image to build.
 
-```bash
-composer require iam-adty/empira-frankenphp
+Not on Packagist yet, so Composer has to be told where to look. Add both packages
+to your `composer.json`:
+
+```json
+{
+    "repositories": [
+        { "type": "vcs", "url": "https://github.com/iam-adty/empira-principle.git" },
+        { "type": "vcs", "url": "https://github.com/iam-adty/empira-frankenphp.git" }
+    ]
+}
 ```
+
+Then require **both**, naming the framework explicitly:
+
+```bash
+composer require iam-adty/empira-principle:dev-main iam-adty/empira-frankenphp:dev-main
+```
+
+Naming the framework is not ceremony: Composer's default `minimum-stability` is
+`stable`, so a transitive dependency on a `dev-` branch is rejected, and this
+package's dependency on `empira-principle` is exactly that.
+
+`:dev-main` is needed because there is no release to satisfy; `^0.1@dev` works too,
+since both packages alias their branch as `0.1.x-dev`. When these reach Packagist,
+the repository block and the suffixes both go away.
 
 ## Why it is a package
 
