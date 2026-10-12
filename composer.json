@@ -1,0 +1,46 @@
+{
+    "name": "iam-adty/empira-frankenphp",
+    "description": "FrankenPHP worker mode for Empira, as a module. Optional: an application runs without it, under php-fpm, nginx or the built-in server.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "frankenphp",
+        "worker",
+        "empira",
+        "module"
+    ],
+    "require": {
+        "php": "^8.4",
+        "iam-adty/empira-principle": "dev-main"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Empira\\FrankenPhp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Empira\\FrankenPhp\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "tools/test"
+    },
+    "bin": [
+        "bin/frankenphp-worker"
+    ],
+    "config": {
+        "sort-packages": true
+    },
+    "//repositories": "The framework is not on Packagist yet, so it resolves from its GitHub repository. A local path repository used to sit here so a sibling checkout resolved without the network; it does not survive a clone, which is what this replaces.",
+    "repositories": [
+        {
+            "name": "principle",
+            "type": "path",
+            "url": "../principle"
+        }
+    ]
+}

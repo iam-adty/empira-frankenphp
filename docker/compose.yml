@@ -1,0 +1,59 @@
+# Worker mode for the Empira application, on this package's image.
+#
+# Optional. `app/docker-compose.yml` runs the same application under nginx +
+# php-fpm with no image build at all, and that is the default.
+#
+#     docker compose -f frankenphp/docker/compose.yml up -d --build
+
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: empira
+      POSTGRES_PASSWORD: empira
+      POSTGRES_DB: empira_app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U empira -d empira_app"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+    volumes:
+      - db-data:/var/lib/postgresql
+
+  app:
+    build:
+      # The workspace root: the worker image needs the application and both
+      # libraries in the context, because they are Composer path packages.
+      context: ../..
+      dockerfile: frankenphp/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      APP_ENV: "${APP_ENV:-local}"
+      APP_SECRET: "${APP_SECRET:-dev-secret-change-me-please-32b}"
+      APP_RUNTIME: worker
+      DB_DRIVER: pgsql
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_DATABASE: empira_app
+      DB_USERNAME: empira
+      DB_PASSWORD: empira
+      # Bound, because a worker that never recycles holds every request it has
+      # served. See FrankenPhpModule::MAX_REQUESTS_DEFAULT.
+      MAX_REQUESTS: "${MAX_REQUESTS:-500}"
+      # 2 x CPU by default. `FRANKENPHP_WORKERS=1` is a diagnostic, not a
+      # setting: it makes a state leak reproduce on every request instead of one
+      # time in 32.
+      FRANKENPHP_WORKERS: "${FRANKENPHP_WORKERS:-}"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost:8080/ || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 20s
+
+volumes:
+  db-data:
