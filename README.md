@@ -47,15 +47,31 @@ controller:
 
 ```bash
 vendor/bin/frankenphp-worker --app=/path/to/app
-# or, directly:
+# or, directly, from the application root:
 frankenphp php-server run -f vendor/iam-adty/empira-frankenphp/worker.php
 ```
 
-Or with the image:
+Run it from the application root. The worker finds your autoloader and your
+`bootstrap/app.php` relative to the working directory, because those are the two
+layouts it has to serve and they share nothing to be relative to. Set
+`EMPIRA_AUTOLOAD` or `EMPIRA_BOOTSTRAP` if your working directory is somewhere else.
 
-```bash
-docker compose -f frankenphp/docker/compose.yml up -d --build
-```
+## About images
+
+This package ships no image, and that is a decision rather than an omission.
+
+A stock PHP cannot become FrankenPHP at runtime — the extension has to exist
+before PHP starts, which is unlike an ordinary extension you can point `-d` at
+after the fact. So someone wanting worker mode needs a FrankenPHP PHP, and
+producing one is an application and deployment decision: what else goes in the
+image, what runs alongside it, where it is built.
+
+An earlier version of this package shipped a `Dockerfile` and a compose file. They
+were removed because they could not be verified — they built an application that
+does not install this package, so the entrypoint they named did not exist. An
+unbuilt image in a published package is worse than no image: it reads as tested.
+
+If you want one, you now know exactly what it has to do.
 
 ## It refuses to load where it cannot work
 
