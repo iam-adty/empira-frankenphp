@@ -50,10 +50,10 @@ controller. The loop is runtime, and runtime does not belong to your application
 ## Use it
 
 ```php
-use App\App\Modules;
+use Empira\Application\Modules;
 use Empira\FrankenPhp\FrankenPhpModule;
 
-#[Modules([FrankenPhpModule::class])]
+#[Modules(FrankenPhpModule::class)]
 final class App extends Application
 {
     // …
