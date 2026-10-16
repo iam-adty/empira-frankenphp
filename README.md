@@ -50,19 +50,18 @@ controller. The loop is runtime, and runtime does not belong to your application
 ## Use it
 
 ```php
-// bootstrap/modules.php
-use Empira\Auth\AuthModule;
+use App\App\Modules;
 use Empira\FrankenPhp\FrankenPhpModule;
 
-return function (Application $app): array {
-    return [
-        new AuthModule([
-            new SessionGuard($app->session(), new DoctrineUserProvider($app->entities())),
-        ]),
-        new FrankenPhpModule(),
-    ];
-};
+#[Modules([FrankenPhpModule::class])]
+final class App extends Application
+{
+    // …
+}
 ```
+
+The container builds each named module, so a class with a default for every
+constructor argument installs itself.
 
 Then boot the worker with this package's entrypoint rather than your front
 controller:
